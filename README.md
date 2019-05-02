@@ -113,7 +113,73 @@ ObjC 的对象(继承自NSObject)不能静态分配，比如分配在栈上。�
 
 ### Item 4: Prefer Typed Constants to Preprocessor #define
 
+常量定义保存了类型信息，而 `#define` 没有类型信息，在预编期间就被直接替换了。
+
+    // EOCAnimatedView.m
+    #import "EOCAnimatedView.h"
+
+    static const NSTimeInterval kAnimationDuration = 0.3;
+
+    @implementation EOCAnimatedView
+    - (void)animate {
+        [UIView animateWithDuration:kAnimationDuration
+                        animations:^(){
+                            // Perform animations
+                        }];
+    }
+    @end
+
+在头文件里使用 `extern` 声明全局变量，在 `.m` 文件里赋值：
+
+    // In the header file
+    extern NSString *const StringConstant;
+
+    // In the implementation file
+    NSString *const StringConstant = @"VALUE";
+
 ### Item 5: Use Enumerations for States, Options, and Status Codes
+
+和C语言一样，枚举的值可以自定义，而且枚举可以当整数用：
+
+    enum EOCMethodOptions {
+        EOCMethodOptionOne   = 1 << 0,
+        EOCMethodOptionTwo   = 1 << 1,
+        EOCMethodOptionThree = 1 << 2,
+    };
+
+    enum EOCMethodOptions options = EOCMethodOptionOne | EOCMethodOptionThree;
+    if (options & OptionOne) {
+        // OptionOne is set
+    }
+
+使用 NS_ENUM 和 NS_OPTIONS 宏来定义枚举：
+
+    typedef NS_ENUM(NSUInteger, EOCConnectionState) {
+        EOCConnectionStateDisconnected,
+        EOCConnectionStateConnecting,
+        EOCConnectionStateConnected,
+    };
+    typedef NS_OPTIONS(NSUInteger, EOCMethodOptions) {
+        EOCMethodOptionOne = 1 << 0,
+        EOCMethodOptionTwo = 1 << 1,
+        EOCMethodOptionThree = 1 << 2,
+    };
+
+    typedef enum EOCConnectionState : NSUInteger EOCConnectionState;
+    enum EOCConnectionState : NSUInteger {
+        EOCConnectionStateDisconnected,
+        EOCConnectionStateConnecting,
+        EOCConnectionStateConnected,
+    };
+
+    typedef enum EOCMethodOptions : int EOCMethodOptions;
+    enum EOCMethodOptions : int {
+        EOCMethodOptionOne = 1 << 0,
+        EOCMethodOptionTwo = 1 << 1,
+        EOCMethodOptionThree = 1 << 2,
+    };
+
+    EOCMethodOptions options = EOCMethodOptionOne | EOCMethodOptionTwo;
 
 ## Chapter 2. Objects, Messaging, and the Runtime
 
