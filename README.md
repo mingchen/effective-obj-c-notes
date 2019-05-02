@@ -63,6 +63,54 @@ ObjC 的对象(继承自NSObject)不能静态分配，比如分配在栈上。�
 
 ### Item 3: Prefer Literal Syntax over the Equivalent Methods
 
+使用 `@` （语法糖）来创建对象，让代码更易读：
+
+    NSString *someString = @"Effective Objective-C 2.0";
+
+    NSNumber *someNumber = [NSNumber numberWithInt:1];
+    NSNumber *someNumber = @1;
+
+    NSNumber *intNumber = @1;
+    NSNumber *floatNumber = @2.5f;
+    NSNumber *doubleNumber = @3.14159;
+    NSNumber *boolNumber = @YES;
+    NSNumber *charNumber = @‘a’;
+
+数组：
+
+    NSArray *animals = [NSArray arrayWithObjects:@"cat", @"dog", @"mouse", @"badger", nil];
+    NSArray *animals = @[@"cat", @"dog", @"mouse", @"badger"];
+
+    [mutableArray replaceObjectAtIndex:1 withObject:@"dog"];
+    [mutableDictionary setObject:@"Galloway" forKey:@"lastName"];
+    mutableArray[1] = @"dog";
+    mutableDictionary[@"lastName"] = @"Galloway";
+
+    NSMutableArray *mutable = [@[@1, @2, @3, @4, @5] mutableCopy];
+
+注意，这里有一个不一致的行为：数组中如果对象有`nil`，`arrayWithObjects`会把当成结束标识，忽略后面的元素，而`@`会产生异常。
+
+    NSArray *arrayA = [NSArray arrayWithObjects:object1, object2, object3, nil];
+    NSArray *arrayB = @[object1, object2, object3];
+
+如果`object2`为`nil`，`arrayA`的结果为`[ object1 ]`，而`arrayB`会扔出异常。
+
+字典：
+
+    NSDictionary *personData =
+        [NSDictionary dictionaryWithObjectsAndKeys:
+            @"Matt", @"firstName",
+            @"Galloway", @"lastName",
+            [NSNumber numberWithInt:28], @"age",
+            nil];
+    NSDictionary *personData =
+        @{@"firstName" : @"Matt",
+        @"lastName" : @"Galloway",
+        @"age" : @28};
+
+    NSString *lastName = [personData objectForKey:@"lastName"];
+    NSString *lastName = personData[@"lastName"];
+
 ### Item 4: Prefer Typed Constants to Preprocessor #define
 
 ### Item 5: Use Enumerations for States, Options, and Status Codes
